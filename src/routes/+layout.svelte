@@ -23,6 +23,7 @@
 	>
 		<h1 class="font-handwritten text-3xl text-white italic">Flash<span>card</span></h1>
 
+		<a href={resolve("")} title="Home" class="hover:mix-blend-difference hover:bg-black w-fit h-fit">
 		<svg
 			class="absolute left-[50%] translate-x-[-50%] transform"
 			width="2.4rem"
@@ -40,12 +41,15 @@
 				/>
 			</g>
 		</svg>
+		</a>
 
 		<div class="flex w-fit flex-row self-center font-global text-white">
 			<ButtonHeaderGroup>
 				<ButtonHeader text="Home" action=""/>
+				{#if user != null}
 				<ButtonHeader text="Folders" action="/folder"/>
 				<ButtonHeader text="Statistics" action='/statistics' />
+				{/if}
 				<ButtonHeader text="About" action='/about' />
 				{#if user != null}
 					<ButtonHeader text="Settings" action="/settings" />
