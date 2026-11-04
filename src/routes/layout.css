@@ -1,0 +1,33 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+@import '@fontsource-variable/playwrite-us-trad';
+@import '@fontsource-variable/league-gothic';
+
+@import 'tailwindcss';
+@plugin '@tailwindcss/forms';
+@plugin '@tailwindcss/typography';
+
+@font-face {
+	font-family: 'ITC Serif Gothic';
+	src: url(/Fonts/Itc-Serif-Gothic/ITC_Serif_Gothic.ttf);
+	font-weight: 300/700;
+}
+
+@theme {
+	--font-handwritten: 'Playwrite US Trad Variable', cursive;
+	--font-serif-gothic: 'ITC Serif Gothic', sans-serif;
+	--font-global: 'Inter', sans-serif;
+
+
+	--animate-scaling: scaling 0.25s ease-out;
+  @keyframes scaling {
+    0%,{
+      transform: scale(105%);
+    }
+    50% {
+      transform: scale(90%);
+    }
+    100% {
+      transform: scale(100%);
+    }
+  }
+}
