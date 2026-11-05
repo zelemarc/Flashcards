@@ -43,6 +43,8 @@
 	},
 	"dependencies": {
 		"@fontsource-variable/league-gothic": "^5.3.0",
-		"@fontsource-variable/playwrite-us-trad": "^5.3.0"
+		"@fontsource-variable/playwrite-us-trad": "^5.3.0",
+		"@iconify-svelte/andrsrxn": "gitlab:iconify-icons/svelte#andrsrxn",
+		"@iconify-svelte/tabler": "github:iconify/icons-svelte#tabler"
 	}
 }
