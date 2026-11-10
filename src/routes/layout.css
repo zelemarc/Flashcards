@@ -17,6 +17,12 @@
 	--font-serif-gothic: 'ITC Serif Gothic', sans-serif;
 	--font-global: 'Inter', sans-serif;
 
+	--color-primary: #0a0908;
+    --color-second: #f2f4f3;
+    --color-red: #49111c;
+    --color-blue: #1460ce;
+    --color-green: #49bc26;
+
 	--animate-scaling: scaling 0.25s ease-out;
 	@keyframes scaling {
 		0% {

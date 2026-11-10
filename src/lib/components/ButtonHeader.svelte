@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
-	let { text, action } = $props();
+	let { text, action, icon = '' } = $props();
 </script>
 
 <button

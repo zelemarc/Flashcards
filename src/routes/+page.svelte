@@ -3,7 +3,7 @@
 	import type { folder } from '#lib/components/folder.ts';
 
 	let folders: folder[] = [
-		{ id: '0', name: 'polski', subfolders: null },
+		{ id: '0', name: 'polski', subfolders: null, new: 0,   },
 		{ id: '1', name: 'matemtyka', subfolders: null },
 		{
 			id: '2',
@@ -11,6 +11,18 @@
 			subfolders: [
 				{ id: '20', name: 'rawa' },
 				{ id: '21', name: 'wachowiak' }
+			]
+		},
+		{
+			id: '3',
+			name: 'Warkusz',
+			subfolders: [
+				{ id: '30', name: 'rawa' },
+				{ id: '31', name: 'dziobak' },
+				{ id: '32', name: 'agnieszka' },
+				{ id: '33', name: 'wladyslaw' },
+				{ id: '34', name: 'ryba' },
+				{ id: '35', name: 'miska' },
 			]
 		}
 	];

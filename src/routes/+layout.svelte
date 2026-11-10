@@ -50,7 +50,7 @@
 
 		<div class="flex w-fit flex-row self-center font-global text-white">
 			<ButtonHeaderGroup>
-				<ButtonHeader text="About" action="/about" />
+				<!-- <ButtonHeader text="About" action="/about" /> -->
 				{#if user != null}
 					<ButtonHeader text="Statistics" action="/statistics" />
 					<ButtonHeader text="Settings" action="/settings" />
