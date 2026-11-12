@@ -2,13 +2,15 @@
 	import './layout.css';
 	import favicon from '#lib/assets/favicon.svg';
 	import type { LayoutProps } from './$types';
-	import { draw } from 'svelte/transition';
+	import { draw, slide } from 'svelte/transition';
+	import SearchIcon from '@iconify-svelte/tabler/search';
 	import ButtonHeaderGroup from '#lib/components/ButtonHeaderGroup.svelte';
 	import ButtonHeader from '#lib/components/ButtonHeader.svelte';
 	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
 	let { children }: LayoutProps = $props();
-
+	let searchfocused = $state(false);
+	let search = $state('');
 	let user = true;
 </script>
 
@@ -50,8 +52,16 @@
 
 		<div class="flex w-fit flex-row self-center font-global text-white">
 			<ButtonHeaderGroup>
-				<!-- <ButtonHeader text="About" action="/about" /> -->
 				{#if user != null}
+					<!-- search button -->
+					<button onfocus={() => searchfocused = true}
+					class="flex flex-row cursor-pointer rounded-2xl px-3 py-1 transition-all
+					duration-100 ease-in hover:bg-[#eeee] hover:text-black justify-center align-middle">
+						<SearchIcon height="1.4em" class="self-center"/>
+						{#if searchfocused}
+						    <input type="text" placeholder="search..." bind:value={search} class="bg-transparent border-none outline-0" transition:slide={{axis: 'x'}}/>
+						{/if}
+					</button>
 					<ButtonHeader text="Statistics" action="/statistics" />
 					<ButtonHeader text="Settings" action="/settings" />
 				{:else}

@@ -1,8 +1,9 @@
 export interface folder {
 	id: string;
-	name: string;
+	name: string | "card deck";
   subfolders?: folder[] | null;
-  new: number;
-  learn: number;
-  due: number;
+  new: number | 0;
+  learn: number | 0;
+  due: number | 0;
+  private: boolean | true;
 }

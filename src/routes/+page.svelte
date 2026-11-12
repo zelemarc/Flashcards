@@ -3,20 +3,24 @@
 	import type { folder } from '#lib/components/folder.ts';
 
 	let folders: folder[] = [
-		{ id: '0', name: 'polski', subfolders: null, new: 0, learn: 0, due: 0 },
-		{ id: '1', name: 'matemtyka', subfolders: null, new: 0, learn: 0, due: 0 },
+		{ id: '0', name: 'polski', subfolders: null, new: 0, learn: 0, due: 0, private: false },
+		{ id: '1', name: 'matemtyka', subfolders: null, new: 0, learn: 0, due: 0, private: true },
 		{
 			id: '2',
 			name: 'informatyka',
 			subfolders: [
-				{ id: '20', name: 'cpp', new: 0, learn: 0, due: 0 },
-				{ id: '21', name: 'python', new: 0, learn: 0, due: 0 }
+				{ id: '20', name: 'cpp',subfolders: null, new: 0, learn: 0, due: 0, private: true },
+				{ id: '21', name: 'python',subfolders: null, new: 0, learn: 0, due: 0, private: false }
 			],
 			new: 0,
 			learn: 0,
-			due: 0
+			due: 0,
+			private: false
 		}
 	];
+
+	// dodac opcje prywatne / publiczny folder/deck kart
+	// opcja sklonowania nie swojego decku i zmieniania go
 </script>
 
 <main class="flex h-screen w-full">
