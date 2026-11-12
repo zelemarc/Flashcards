@@ -2,6 +2,7 @@ node_modules
 
 # Output
 .output
+.vscode
 .vercel
 .netlify
 .wrangler
@@ -21,3 +22,7 @@ Thumbs.db
 # Vite
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
+
+.prettierignore
+prettier.config.js
+eslint.config.js

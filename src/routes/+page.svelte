@@ -3,27 +3,18 @@
 	import type { folder } from '#lib/components/folder.ts';
 
 	let folders: folder[] = [
-		{ id: '0', name: 'polski', subfolders: null, new: 0,   },
-		{ id: '1', name: 'matemtyka', subfolders: null },
+		{ id: '0', name: 'polski', subfolders: null, new: 0, learn: 0, due: 0 },
+		{ id: '1', name: 'matemtyka', subfolders: null, new: 0, learn: 0, due: 0 },
 		{
 			id: '2',
 			name: 'informatyka',
 			subfolders: [
-				{ id: '20', name: 'rawa' },
-				{ id: '21', name: 'wachowiak' }
-			]
-		},
-		{
-			id: '3',
-			name: 'Warkusz',
-			subfolders: [
-				{ id: '30', name: 'rawa' },
-				{ id: '31', name: 'dziobak' },
-				{ id: '32', name: 'agnieszka' },
-				{ id: '33', name: 'wladyslaw' },
-				{ id: '34', name: 'ryba' },
-				{ id: '35', name: 'miska' },
-			]
+				{ id: '20', name: 'cpp', new: 0, learn: 0, due: 0 },
+				{ id: '21', name: 'python', new: 0, learn: 0, due: 0 }
+			],
+			new: 0,
+			learn: 0,
+			due: 0
 		}
 	];
 </script>
@@ -32,7 +23,7 @@
 	<section class="mx-auto mt-20 flex h-fit w-1/2 flex-col text-white">
 		<div class="flex w-full flex-row justify-between italic">
 			<p>Folder</p>
-			<div class="flex w-50 flex-row justify-between ">
+			<div class="flex w-50 flex-row justify-between">
 				<p>new</p>
 				<p>learn</p>
 				<p>due</p>

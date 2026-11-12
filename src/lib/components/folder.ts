@@ -4,6 +4,5 @@ export interface folder {
   subfolders?: folder[] | null;
   new: number;
   learn: number;
-  forgotten: number;
   due: number;
 }
