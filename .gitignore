@@ -26,3 +26,8 @@ vite.config.ts.timestamp-*
 .prettierignore
 prettier.config.js
 eslint.config.js
+
+#backend
+backend/venv/
+__pycache__/
+*.db
