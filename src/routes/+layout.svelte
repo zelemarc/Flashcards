@@ -24,7 +24,7 @@
 		class="fixed z-50 m-1 flex h-fit w-full justify-between rounded-2xl border
 		border-white/20 bg-gray-400/15 px-4 py-2 backdrop-blur-xl"
 	>
-		<h1 class="font-handwritten text-3xl text-white italic">Flashcard</h1>
+		<a href={resolve('')} title="Home"> <h1 class="font-handwritten text-3xl text-white italic">Flashcard</h1></a>
 
 		<a
 			href={resolve('')}

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { folder } from './folder';
-	import Folder from './Folder.svelte'
+	import Folder from './Folder.svelte';
 	import FolderIcon from '@iconify-svelte/tabler/folder';
 	import FolderOpenIcon from '@iconify-svelte/tabler/folder-open';
 	import CardsIcon from '@iconify-svelte/tabler/cards';
@@ -33,17 +33,17 @@
 		focused = false;
 		showSub = false;
 	}}
-	ondblclick={() => goto(resolve('/card/[0]'))}
+	ondblclick={() => goto(resolve('/card/0'))}
 >
 	<div class="relative flex w-full flex-row">
 		<div class="relative rounded-xl px-2">
 			{#if focused}
 				<div
-					class="absolute -left-18 isolate z-50 transform animate-scaling rounded-2xl bg-black
-				px-2 invert transition duration-100 ease-in hover:scale-105 overflow-clip"
-					onclick={() => goto(resolve('/card'))}
+					class="absolute -left-18 isolate z-50 transform animate-scaling overflow-clip rounded-2xl
+				bg-black px-2 invert transition duration-100 ease-in hover:scale-105"
+					onclick={() => goto(resolve('/card/[deckid]', {deckid: id}))}
 				>
-					<p class="group gap-0 rounded-2xl font-black tracking-[-0.1em] italic invert ">
+					<p class="group gap-0 rounded-2xl font-black tracking-[-0.1em] italic invert">
 						<span class="text-black group-hover:text-red">P</span>
 						<span class="text-black group-hover:text-amber">L</span>
 						<span class="text-black group-hover:text-blue">A</span>
@@ -76,8 +76,16 @@
 					class="absolute top-0 left-6 isolate flex transform flex-col overflow-clip rounded-xl border-2 border-white bg-black"
 					transition:slide
 				>
-					<MenuButton text="add card" color="oklch(0.626 0.257 29)" on:click={() => goto(resolve("/addCard"))} />
-					<MenuButton text="modify card" color="oklch(0.769 0.188 70.08)" />
+					<MenuButton
+						text="add card"
+						color="oklch(0.626 0.257 29)"
+						on:click={() => goto(resolve('/addCard'))}
+					/>
+					<MenuButton
+						text="modify card"
+						color="oklch(0.769 0.188 70.08)"
+						on:click={() => goto(resolve('/modifyDeck/[deckid]', {deckid: id}))}
+					/>
 					<MenuButton text="copy deck" color="oklch(0.649 0.311 321)" />
 					<MenuButton text="rename" color="oklch(0.511 0.272 263)" />
 					<MenuButton
@@ -91,7 +99,12 @@
 	{#if showSub && subfolders}
 		<div transition:slide={{ easing: cubicOut }}>
 			{#each subfolders as folder (folder.id)}
-				<Folder id={folder.id} name={folder.name} subfolders={folder.subfolders || null} privateDeck={folder.private} />
+				<Folder
+					id={folder.id}
+					name={folder.name}
+					subfolders={folder.subfolders || null}
+					privateDeck={folder.private}
+				/>
 			{/each}
 		</div>
 	{/if}

@@ -1,9 +1,11 @@
 export interface card {
   id: string;
   type: string;
-  question: inputType;
-  answer: inputType;
-  answerHistory: answerHistory[];
+  question: string;
+  answer: string;
+  answerHistory?: answerHistory[] | null;
+  deckid: string;
+  created: string; //date YYYY-MM-DDTHH:MM:SS
 }
 
 export interface inputType {

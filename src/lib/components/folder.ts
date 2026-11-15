@@ -6,4 +6,5 @@ export interface folder {
   learn: number | 0;
   due: number | 0;
   private: boolean | true;
+  created: string; //date YYYY-MM-DDTHH:MM:SS
 }

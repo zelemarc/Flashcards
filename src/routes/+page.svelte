@@ -1,26 +1,10 @@
 <script lang="ts">
 	import Folder from '#lib/components/Folder.svelte';
 	import type { folder } from '#lib/components/folder.ts';
+	import type { PageProps } from './$types';
 
-	let folders: folder[] = [
-		{ id: '0', name: 'polski', subfolders: null, new: 0, learn: 0, due: 0, private: false },
-		{ id: '1', name: 'matemtyka', subfolders: null, new: 0, learn: 0, due: 0, private: true },
-		{
-			id: '2',
-			name: 'informatyka',
-			subfolders: [
-				{ id: '20', name: 'cpp',subfolders: null, new: 0, learn: 0, due: 0, private: true },
-				{ id: '21', name: 'python',subfolders: null, new: 0, learn: 0, due: 0, private: false }
-			],
-			new: 0,
-			learn: 0,
-			due: 0,
-			private: false
-		}
-	];
-
-	// dodac opcje prywatne / publiczny folder/deck kart
-	// opcja sklonowania nie swojego decku i zmieniania go
+	let { data }: PageProps = $props();
+	let folders: folder[] = $derived(data.folders);
 </script>
 
 <main class="flex h-screen w-full">
@@ -35,7 +19,7 @@
 		</div>
 		<hr />
 		{#each folders as folder (folder.id)}
-			<Folder id={folder.id} name={folder.name} subfolders={folder?.subfolders || null} />
+			<Folder id={folder.id} name={folder.name} subfolders={folder?.subfolders || null} privateDeck={folder.private} />
 		{/each}
 	</section>
 </main>
