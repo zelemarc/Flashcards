@@ -31,3 +31,4 @@ eslint.config.js
 backend/venv/
 __pycache__/
 *.db
+.secret_key

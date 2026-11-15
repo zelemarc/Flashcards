@@ -1,22 +1,17 @@
-import bcrypt
-
+from auth import hash_password
 from database import init_db, SessionLocal, User, Folder, Card
-
-
-def hash_password(password: str) -> str:
-    return bcrypt.hashpw(password.encode(), bcrypt.gensalt()).decode()
-
 
 def seed_db():
     init_db()
     db = SessionLocal()
 
     try:
-        if db.query(User).filter_by(email="agnieszka@mail.com").first() is None:
+        if db.query(User).filter_by(email="agnieszka@example.com").first() is None:
             user1 = User(
-                email="agnieszka@mail.com",
+                email="agnieszka@example.com",
                 password=hash_password("haslo123"),
             )
+
             Folder(name="polski", user=user1)
             Folder(name="matematyka", user=user1)
             Folder(

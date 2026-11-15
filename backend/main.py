@@ -5,7 +5,8 @@ from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 
-from database import get_db, Folder
+from auth import router as auth_router, get_current_user
+from database import get_db, Folder, User
 from seed import seed_db
 
 
@@ -23,6 +24,8 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+app.include_router(auth_router)
 
 
 def folder_to_dict(f: Folder) -> dict:
@@ -43,6 +46,13 @@ def folder_to_dict(f: Folder) -> dict:
 
 
 @app.get("/folders")
-def list_folders(db: Session = Depends(get_db)):
-    roots = db.query(Folder).filter(Folder.parent_id.is_(None)).all()
+def list_folders(
+    user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    roots = (
+        db.query(Folder)
+        .filter(Folder.user_id == user.id, Folder.parent_id.is_(None))
+        .all()
+    )
     return [folder_to_dict(f) for f in roots]

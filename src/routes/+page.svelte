@@ -1,14 +1,22 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
 	import Folder from '#lib/components/Folder.svelte';
 	import type { folder } from '#lib/components/folder.ts';
 
-	let folders: folder[] = $state([]);
-
-	onMount(async () => {
-		const res = await fetch('http://localhost:8000/folders');
-		folders = await res.json();
-	});
+	let folders: folder[] = [
+		{ id: '0', name: 'polski', subfolders: null, new: 0, learn: 0, due: 0 },
+		{ id: '1', name: 'matemtyka', subfolders: null, new: 0, learn: 0, due: 0 },
+		{
+			id: '2',
+			name: 'informatyka',
+			subfolders: [
+				{ id: '20', name: 'cpp', new: 0, learn: 0, due: 0 },
+				{ id: '21', name: 'python', new: 0, learn: 0, due: 0 }
+			],
+			new: 0,
+			learn: 0,
+			due: 0
+		}
+	];
 </script>
 
 <main class="flex h-screen w-full">
