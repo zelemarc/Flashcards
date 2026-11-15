@@ -8,6 +8,7 @@
 	import ButtonHeader from '#lib/components/ButtonHeader.svelte';
 	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
+	import { cubicIn, cubicInOut } from 'svelte/easing';
 	let { children }: LayoutProps = $props();
 	let searchfocused = $state(false);
 	let search = $state('');
@@ -23,7 +24,7 @@
 		class="fixed z-50 m-1 flex h-fit w-full justify-between rounded-2xl border
 		border-white/20 bg-gray-400/15 px-4 py-2 backdrop-blur-xl"
 	>
-		<h1 class="font-handwritten text-3xl text-white italic">Flash<span>card</span></h1>
+		<h1 class="font-handwritten text-3xl text-white italic">Flashcard</h1>
 
 		<a
 			href={resolve('')}
@@ -54,12 +55,13 @@
 			<ButtonHeaderGroup>
 				{#if user != null}
 					<!-- search button -->
-					<button onfocus={() => searchfocused = true}
-					class="flex flex-row cursor-pointer rounded-2xl px-3 py-1 transition-all
+					<button onfocusin={() => searchfocused = true}
+					onfocusout={() => search === "" ? searchfocused = false : null}
+					class="flex flex-row cursor-pointer rounded-2xl px-3 py-1 transition-all h-fit
 					duration-100 ease-in hover:bg-[#eeee] hover:text-black justify-center align-middle">
 						<SearchIcon height="1.4em" class="self-center"/>
 						{#if searchfocused}
-						    <input type="text" placeholder="search..." bind:value={search} class="bg-transparent border-none outline-0" transition:slide={{axis: 'x'}}/>
+						    <input type="text" placeholder="search..." bind:value={search} class="bg-transparent border-none outline-0 h-[1.4em]" transition:slide={{axis: 'x', easing: cubicInOut}}/>
 						{/if}
 					</button>
 					<ButtonHeader text="Statistics" action="/statistics" />
