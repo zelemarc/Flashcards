@@ -94,9 +94,10 @@ class Card(Base):
     answer: Mapped[str] = mapped_column(String)
     question_img: Mapped[Optional[str]] = mapped_column(String, nullable=True)
     answer_img: Mapped[Optional[str]] = mapped_column(String, nullable=True)
+    favourite: Mapped[bool] = mapped_column(Boolean, default=False)
 
-    # reviews
-    state: Mapped[str] = mapped_column(String(10), default="new")  #new / learn / review
+    #review
+    state: Mapped[str] = mapped_column(String(10), default="new")  # new / learn / review
     due_date: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable=True)
     interval_days: Mapped[int] = mapped_column(Integer, default=0)
     ease: Mapped[float] = mapped_column(Float, default=2.5)
@@ -114,7 +115,7 @@ class Answer(Base):
     id: Mapped[int] = mapped_column(primary_key=True, index=True)
     card_id: Mapped[int] = mapped_column(ForeignKey("cards.id"))
     date: Mapped[datetime] = mapped_column(DateTime, default=datetime.now)
-    rating: Mapped[int] = mapped_column(Integer)
+    rating: Mapped[int] = mapped_column(Integer)  # od -1 do 3
     time_spent_ms: Mapped[int] = mapped_column(Integer, default=0)
 
     card: Mapped["Card"] = relationship(back_populates="answers")

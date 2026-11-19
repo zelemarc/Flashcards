@@ -11,16 +11,17 @@ def seed_db():
                 email="agnieszka@example.com",
                 password=hash_password("haslo123"),
             )
-
             Folder(name="polski", user=user1)
             Folder(name="matematyka", user=user1)
             Folder(
                 name="języki",
                 user=user1,
+                public=True,
                 subfolders=[
                     Folder(
                         name="kaszubski - kolory",
                         user=user1,
+                        public=True,
                         cards=[
                             Card(question="czerwony", answer="czerwony"),
                             Card(question="modri", answer="niebieski"),
@@ -35,6 +36,7 @@ def seed_db():
                     Folder(
                         name="niemiecki - kolory",
                         user=user1,
+                        public=True,
                         cards=[
                             Card(question="rot", answer="czerwony"),
                             Card(question="blau", answer="niebieski"),

@@ -40,6 +40,10 @@ class ChangePassword(BaseModel):
     new_password: str
 
 
+class DeleteAccount(BaseModel):
+    password: str
+
+
 def hash_password(password: str) -> str:
     return bcrypt.hashpw(password.encode(), bcrypt.gensalt()).decode()
 
@@ -101,5 +105,18 @@ def change_password(
     if not bcrypt.checkpw(body.old_password.encode(), user.password.encode()):
         raise HTTPException(401, "stare haslo jest nieprawidlowe")
     user.password = hash_password(body.new_password)
+    db.commit()
+    return {"ok": True}
+
+
+@router.delete("/me")
+def delete_account(
+    body: DeleteAccount,
+    user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    if not bcrypt.checkpw(body.password.encode(), user.password.encode()):
+        raise HTTPException(401, "haslo jest nieprawidlowe")
+    db.delete(user)
     db.commit()
     return {"ok": True}

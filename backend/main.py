@@ -1,13 +1,13 @@
 from contextlib import asynccontextmanager
-from datetime import datetime
 
-from fastapi import FastAPI, Depends
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from sqlalchemy.orm import Session
 
-from auth import router as auth_router, get_current_user
-from database import get_db, Folder, User
+from auth import router as auth_router
+from cards import router as cards_router
+from folders import router as folders_router
 from seed import seed_db
+from stats import router as statistics_router
 
 
 @asynccontextmanager
@@ -26,33 +26,6 @@ app.add_middleware(
 )
 
 app.include_router(auth_router)
-
-
-def folder_to_dict(f: Folder) -> dict:
-    """Zamienia folder z bazy na kształt z folder.ts."""
-    now = datetime.now()
-    return {
-        "id": str(f.id),
-        "name": f.name,
-        "subfolders": [folder_to_dict(s) for s in f.subfolders] or None,
-        "new": sum(1 for c in f.cards if c.state == "new"),
-        "learn": sum(1 for c in f.cards if c.state == "learn"),
-        "due": sum(
-            1
-            for c in f.cards
-            if c.state == "review" and c.due_date and c.due_date <= now
-        ),
-    }
-
-
-@app.get("/folders")
-def list_folders(
-    user: User = Depends(get_current_user),
-    db: Session = Depends(get_db),
-):
-    roots = (
-        db.query(Folder)
-        .filter(Folder.user_id == user.id, Folder.parent_id.is_(None))
-        .all()
-    )
-    return [folder_to_dict(f) for f in roots]
+app.include_router(folders_router)
+app.include_router(cards_router)
+app.include_router(statistics_router)
