@@ -56,6 +56,7 @@ def card_to_dict(c: Card) -> dict:
         "answer": {"text": c.answer, "img": c.answer_img},
         "favourite": c.favourite,
         "state": c.state,
+        "due_date": c.due_date.isoformat() if c.due_date else None,
         "answerHistory": [
             {
                 "date": a.date.isoformat(),

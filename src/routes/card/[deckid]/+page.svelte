@@ -13,18 +13,43 @@
 	let cards = $derived(data.cards);
 	let index = $state(0);
 	let showAnswer = $state(false);
+	let grading = $state(false);
+	let gradeError = $state('');
+	let cardStartedAt = Date.now();
 
 	let cardObject = $derived(cards[index]);
 	let isDone = $derived(cards.length > 0 && index >= cards.length);
 	let progress = $derived(cards.length === 0 ? 0 : (index / cards.length) * 100);
 
-	function grade(value: number) {
-		if (!showAnswer || isDone) return;
+	async function grade(value: number) {
+		if (!showAnswer || isDone || grading || !cardObject) return;
 
-		// The answer is not persisted yet, so the grade only moves the session forward.
-		void value;
-		showAnswer = false;
-		index += 1;
+		grading = true;
+		gradeError = '';
+		try {
+			const response = await fetch(`/api/cards/${encodeURIComponent(cardObject.id)}/answers`, {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({
+					rating: value + 1,
+					time_spent_ms: Math.max(0, Date.now() - cardStartedAt)
+				})
+			});
+
+			if (!response.ok) {
+				const result = (await response.json().catch(() => ({}))) as { message?: string };
+				gradeError = result.message ?? 'Could not save your answer. Please try again.';
+				return;
+			}
+
+			showAnswer = false;
+			index += 1;
+			cardStartedAt = Date.now();
+		} catch {
+			gradeError = 'Could not reach the server. Please try again.';
+		} finally {
+			grading = false;
+		}
 	}
 
 	function restart() {
@@ -170,14 +195,17 @@
 
 			<footer class="flex flex-row flex-wrap justify-center gap-3 pb-2">
 				{#if showAnswer}
-					<ButtonSlide text="1 · bad" onclick={() => grade(-1)} />
-					<ButtonSlide text="2 · again" onclick={() => grade(0)} />
-					<ButtonSlide text="3 · good" onclick={() => grade(1)} />
-					<ButtonSlide text="4 · easy" onclick={() => grade(2)} />
+					<ButtonSlide text="1 · bad" disabled={grading} onclick={() => grade(-1)} />
+					<ButtonSlide text="2 · again" disabled={grading} onclick={() => grade(0)} />
+					<ButtonSlide text="3 · good" disabled={grading} onclick={() => grade(1)} />
+					<ButtonSlide text="4 · easy" disabled={grading} onclick={() => grade(2)} />
 				{:else}
 					<ButtonSlide text="show answer" onclick={() => (showAnswer = true)} />
 				{/if}
 			</footer>
+			{#if gradeError}
+				<p class="pb-2 text-center text-sm text-red-300" role="alert">{gradeError}</p>
+			{/if}
 		{/if}
 	</section>
 </main>

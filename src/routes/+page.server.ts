@@ -1,8 +1,7 @@
-import * as decks from '#lib/server/example/deck.ts';
 import type { PageServerLoad } from './$types';
+import { listFolders, requireAuth } from '#lib/server/api.ts';
 
-export const load: PageServerLoad = async () => {
-	return {
-		folders: decks.folders
-	};
+export const load: PageServerLoad = async ({ fetch, locals }) => {
+	const token = requireAuth(locals);
+	return { folders: await listFolders({ fetch, token }) };
 };

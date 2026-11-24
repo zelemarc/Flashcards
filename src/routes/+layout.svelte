@@ -108,6 +108,14 @@
 					</div>
 					<ButtonHeader text="Statistics" action="/statistics" />
 					<ButtonHeader text="Settings" action="/settings" />
+					<form method="POST" action="/logout">
+						<button
+							type="submit"
+							class="transform cursor-pointer rounded-lg px-3 py-1 text-white/70 transition-all duration-100 ease-in hover:bg-white/10 hover:text-white"
+						>
+							Logout
+						</button>
+					</form>
 				{:else}
 					<button
 						class="transform cursor-pointer rounded-lg bg-red-500/60 px-3 py-1

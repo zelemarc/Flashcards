@@ -8,7 +8,7 @@
 	import LockIcon from '@iconify-svelte/tabler/lock';
 	import { slide } from 'svelte/transition';
 	import { cubicOut } from 'svelte/easing';
-	import { goto } from '$app/navigation';
+	import { goto, invalidateAll } from '$app/navigation';
 	import { resolve } from '$app/paths';
 	import MenuButton from './MenuButton.svelte';
 	import { onMount } from 'svelte';
@@ -18,6 +18,7 @@
 	let focused = $state(false);
 	let collapsed: Record<string, boolean> = $state({});
 	let clickedmenu = $state(false);
+	let actionError = $state('');
 
 	let children = $derived(folders.filter((child) => child.parentid === folder.id));
 	let hasChildren = $derived(children.length > 0);
@@ -44,6 +45,34 @@
 
 	function toggle() {
 		collapsed[folder.id] = !isCollapsed;
+	}
+
+	async function updateFolder(body: { name?: string; public?: boolean }) {
+		actionError = '';
+		try {
+			const response = await fetch(`/api/folders/${encodeURIComponent(folder.id)}`, {
+				method: 'PATCH',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify(body)
+			});
+			if (!response.ok) throw new Error('Could not update this deck.');
+			await invalidateAll();
+		} catch (error) {
+			actionError = error instanceof Error ? error.message : 'Could not update this deck.';
+		}
+	}
+
+	async function copyFolder() {
+		actionError = '';
+		try {
+			const response = await fetch(`/api/folders/${encodeURIComponent(folder.id)}`, {
+				method: 'POST'
+			});
+			if (!response.ok) throw new Error('Only public decks can be copied.');
+			await invalidateAll();
+		} catch (error) {
+			actionError = error instanceof Error ? error.message : 'Could not copy this deck.';
+		}
 	}
 </script>
 
@@ -128,22 +157,33 @@
 					<MenuButton
 						text="add card"
 						color="oklch(0.626 0.257 29)"
-						on:click={() => goto(resolve('/addCard/[deckid]', { deckid: folder.id }))}
+						onclick={() => goto(resolve('/addCard/[deckid]', { deckid: folder.id }))}
 					/>
 					<MenuButton
 						text="modify card"
 						color="oklch(0.769 0.188 70.08)"
-						on:click={() => goto(resolve('/modifyDeck/[deckid]', { deckid: folder.id }))}
+						onclick={() => goto(resolve('/modifyDeck/[deckid]', { deckid: folder.id }))}
 					/>
-					<MenuButton text="copy deck" color="oklch(0.649 0.311 321)" />
-					<MenuButton text="rename" color="oklch(0.511 0.272 263)" />
+					<MenuButton text="copy deck" color="oklch(0.649 0.311 321)" onclick={copyFolder} />
+					<MenuButton
+						text="rename"
+						color="oklch(0.511 0.272 263)"
+						onclick={() => {
+							const name = prompt('New deck name', folder.name)?.trim();
+							if (name) void updateFolder({ name });
+						}}
+					/>
 					<MenuButton
 						text={folder.private ? 'make public' : 'make private'}
 						color="oklch(0.781 0.258 143)"
+						onclick={() => void updateFolder({ public: folder.private })}
 					/>
 				</div>
 			{/if}
 		</div>
+		{#if actionError}
+			<p class="pl-2 text-xs text-red-300" role="alert">{actionError}</p>
+		{/if}
 	</div>
 
 	{#if hasChildren && !isCollapsed}

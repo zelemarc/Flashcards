@@ -1,17 +1,13 @@
 import { error } from '@sveltejs/kit';
-import * as decks from '#lib/server/example/deck.ts';
-import * as cards from '#lib/server/example/cards.ts';
 import type { PageServerLoad } from './$types';
-import type { card } from '#lib/components/card.ts';
+import { listCardsForTree, listFolders, requireAuth } from '#lib/server/api.ts';
 
-export const load: PageServerLoad = async ({ params }) => {
-	const folderFound = decks.folders.find((e) => e.id === params.deckid);
-	if (!folderFound) error(404, 'Not found');
+export const load: PageServerLoad = async ({ params, fetch, locals }) => {
+	const token = requireAuth(locals);
+	const context = { fetch, token };
+	const folders = await listFolders(context);
+	const folder = folders.find((item) => item.id === params.deckid);
+	if (!folder) error(404, 'Folder not found');
 
-	const cardsFiltered: card[] = cards.cards.filter((e) => e.deckid === params.deckid);
-
-	return {
-		folder: folderFound,
-		cards: cardsFiltered
-	};
+	return { folder, cards: await listCardsForTree(context, folders, params.deckid) };
 };

@@ -1,35 +1,33 @@
-import * as decks from '#lib/server/example/deck.ts';
-import * as cards from '#lib/server/example/cards.ts';
 import type { PageServerLoad } from './$types';
+import { listCards, listFolders, requireAuth } from '#lib/server/api.ts';
 
-export const load: PageServerLoad = async ({ params }) => {
+export const load: PageServerLoad = async ({ params, fetch, locals }) => {
+	const token = requireAuth(locals);
+	const context = { fetch, token };
 	const query = params.search.trim();
 	const term = query.toLowerCase();
+	const folders = await listFolders(context);
+	const cardsByFolder = await Promise.all(
+		folders.map(async (folder) => ({ folder, cards: await listCards(context, folder.id) }))
+	);
+	const allCards = cardsByFolder.flatMap(({ folder, cards }) =>
+		cards.map((item) => ({ ...item, deckName: folder.name }))
+	);
 
-	const folders = query
-		? decks.folders
+	const matchingFolders = query
+		? folders
 				.filter((folder) => folder.name.toLowerCase().includes(term))
 				.map((folder) => ({
 					...folder,
-					cardCount: cards.cards.filter((card) => card.deckid === folder.id).length
+					cardCount: allCards.filter((item) => item.deckid === folder.id).length
 				}))
 		: [];
-
 	const matchingCards = query
-		? cards.cards.filter(
-				(card) =>
-					card.question.toLowerCase().includes(term) || card.answer.toLowerCase().includes(term)
+		? allCards.filter(
+				(item) =>
+					item.question.toLowerCase().includes(term) || item.answer.toLowerCase().includes(term)
 			)
 		: [];
 
-	const cardsWithDeck = matchingCards.map((card) => ({
-		...card,
-		deckName: decks.folders.find((folder) => folder.id === card.deckid)?.name ?? 'unknown deck'
-	}));
-
-	return {
-		query,
-		folders,
-		cards: cardsWithDeck
-	};
+	return { query, folders: matchingFolders, cards: matchingCards };
 };
