@@ -5,21 +5,22 @@
 
 	let { data }: PageProps = $props();
 	let folders: folder[] = $derived(data.folders);
+	let rootFolders: folder[] = $derived(folders.filter((folder) => !folder.parentid));
 </script>
 
 <main class="flex h-screen w-full overflow-clip">
 	<section class="mx-auto flex h-fit w-1/2 flex-col text-white">
 		<div class="flex w-full flex-row justify-between italic">
 			<p>Folder</p>
-			<div class="flex w-50 flex-row justify-between">
+			<div class="mr-6 flex w-50 flex-row justify-between text-sm">
 				<p>new</p>
 				<p>learn</p>
 				<p>due</p>
 			</div>
 		</div>
 		<hr />
-		{#each folders as folder (folder.id)}
-			<Folder id={folder.id} name={folder.name} subfolders={folder?.subfolders || null} privateDeck={folder.private} />
+		{#each rootFolders as folder (folder.id)}
+			<Folder {folder} {folders} />
 		{/each}
 	</section>
 </main>

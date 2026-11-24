@@ -1,13 +1,11 @@
 <script lang="ts">
-	import type { folder } from './folder';
+	import type { folder as FolderType } from './folder';
 	import Folder from './Folder.svelte';
-	import FolderIcon from '@iconify-svelte/tabler/folder';
-	import FolderOpenIcon from '@iconify-svelte/tabler/folder-open';
 	import ChevronDown from '@iconify-svelte/tabler/chevron-down';
 	import ChevronRight from '@iconify-svelte/tabler/chevron-right';
 	import CardsIcon from '@iconify-svelte/tabler/cards';
 	import DotsIcon from '@iconify-svelte/tabler/dots';
-	import PlayIcon from '@iconify-svelte/tabler/play-card';
+	import LockIcon from '@iconify-svelte/tabler/lock';
 	import { slide } from 'svelte/transition';
 	import { cubicOut } from 'svelte/easing';
 	import { goto } from '$app/navigation';
@@ -15,114 +13,144 @@
 	import MenuButton from './MenuButton.svelte';
 	import { onMount } from 'svelte';
 
+	let { folder, folders }: { folder: FolderType; folders: FolderType[] } = $props();
+
 	let focused = $state(false);
-	let showSub = $state(false);
 	let collapsed: Record<string, boolean> = $state({});
 	let clickedmenu = $state(false);
-	let {
-		id,
-		name,
-		subfolders = null,
-		privateDeck
-	}: { id: string; name: string; subfolders: folder[] | null; privateDeck: boolean } = $props();
+
+	let children = $derived(folders.filter((child) => child.parentid === folder.id));
+	let hasChildren = $derived(children.length > 0);
+	let isCollapsed = $derived(collapsed[folder.id] ?? false);
 
 	$effect(() => {
-		cookieStore.set('collapsed', JSON.stringify(collapsed), { path: '/' });
-	});
-	onMount(async () => {
-		const saved = await cookieStore.get('collapsed');
-		if (saved?.value) {
-			collapsed = JSON.parse(saved.value);
+		const value = JSON.stringify(collapsed);
+		if (typeof cookieStore !== 'undefined') {
+			cookieStore.set({ name: 'collapsed', value, path: '/' });
 		}
-	})
+	});
+
+	onMount(async () => {
+		if (typeof cookieStore === 'undefined') return;
+		const saved = await cookieStore.get('collapsed');
+		if (!saved?.value) return;
+
+		try {
+			collapsed = JSON.parse(saved.value);
+		} catch {
+			collapsed = {};
+		}
+	});
+
+	function toggle() {
+		collapsed[folder.id] = !isCollapsed;
+	}
 </script>
 
-<button
-	class="flex w-full transform flex-col rounded-2xl bg-transparent text-xl transition-all duration-100 ease-in hover:bg-white/10"
-	onfocus={() => {
+<div
+	class="flex w-full flex-col"
+	onfocusin={() => {
 		focused = true;
 	}}
-	onfocusout={() => {
+	onfocusout={(event) => {
+		if (event.currentTarget.contains(event.relatedTarget as Node | null)) return;
 		focused = false;
 	}}
-
-	ondblclick={() => goto(resolve('/card/[deckid]', { deckid: id}))}
 >
-	<div class="relative flex w-full flex-row" 	onclick={() => (collapsed[id] = !collapsed[id])}>
-		<div class="relative rounded-xl px-2" >
-			{#if focused}
-				<div
-					class="absolute -left-18 isolate z-50 transform animate-scaling overflow-clip rounded-2xl
-				bg-black px-2 invert transition duration-100 ease-in hover:scale-105"
-					onclick={() => goto(resolve('/card/[deckid]', { deckid: id }))}
-				>
-					<p class="group gap-0 rounded-2xl font-black tracking-[-0.1em] italic invert">
-						<span class="text-black group-hover:text-red">P</span>
-						<span class="text-black group-hover:text-amber">L</span>
-						<span class="text-black group-hover:text-blue">A</span>
-						<span class="text-black group-hover:text-green">Y</span>
-					</p>
-				</div>
-			{/if}
-			{#if subfolders != null}
-				{#if !collapsed[id]}
-				<div in:slide={{axis: 'y'}} out:slide={{axis: 'y'}}>
-					<ChevronRight height="1.5em"/>
-				</div>
+	<div class="relative flex w-full flex-row">
+		{#if focused}
+			<button
+				type="button"
+				aria-label="Study {folder.name}"
+				title="Study {folder.name}"
+				class="absolute top-1/2 -left-16 z-50 -translate-y-1/2 transform animate-scaling overflow-clip
+				rounded-2xl bg-black px-2 invert transition duration-100 ease-in hover:scale-105"
+				onclick={() => goto(resolve('/card/[deckid]', { deckid: folder.id }))}
+			>
+				<span class="group gap-0 rounded-2xl font-black tracking-[-0.1em] italic invert">
+					<span class="text-black group-hover:text-red">P</span>
+					<span class="text-black group-hover:text-amber">L</span>
+					<span class="text-black group-hover:text-blue">A</span>
+					<span class="text-black group-hover:text-green">Y</span>
+				</span>
+			</button>
+		{/if}
+		<button
+			type="button"
+			class="flex w-full transform flex-row items-center rounded-2xl bg-transparent pr-6 text-left
+			text-xl transition-all duration-100 ease-in hover:bg-white/10"
+			onclick={toggle}
+			ondblclick={() => goto(resolve('/card/[deckid]', { deckid: folder.id }))}
+		>
+			<span class="relative inline-flex items-center rounded-xl px-2">
+				{#if hasChildren}
+					{#if isCollapsed}
+						<ChevronRight height="1.5em" />
+					{:else}
+						<ChevronDown height="1.5em" />
+					{/if}
 				{:else}
-				<div in:slide={{axis: 'y'}} out:slide={{axis: 'y'}}>
-					<ChevronDown height="1.5em" />
-				</div>
+					<CardsIcon height="1.5em" />
 				{/if}
-			{:else}
-				<CardsIcon height="1.5em" />
+			</span>
+			<span title="{folder.id}. {folder.name}" class="min-w-0 truncate font-global text-white">
+				{folder.name}
+			</span>
+			{#if folder.private}
+				<LockIcon height="0.9em" class="ml-2 shrink-0 opacity-30" />
 			{/if}
-		</div>
-		<p title="{id}. {name}" class="font-global text-white">{name}</p>
-		<div class="absolute -right-5">
-			<div
-				class="isolate transform rounded-2xl bg-black transition-all duration-100 ease-in hover:invert"
+			<span class="ml-auto flex w-50 shrink-0 flex-row justify-between text-sm">
+				<span class={folder.new > 0 ? 'text-blue' : 'text-white/25'}>{folder.new}</span>
+				<span class={folder.learn > 0 ? 'text-red' : 'text-white/25'}>{folder.learn}</span>
+				<span class={folder.due > 0 ? 'text-green' : 'text-white/25'}>{folder.due}</span>
+			</span>
+		</button>
+
+		<div class="absolute top-1/2 -right-5 -translate-y-1/2">
+			<button
+				type="button"
+				aria-label="Deck menu"
+				title="Deck options"
+				class="isolate flex transform cursor-pointer rounded-2xl bg-black p-1 transition-all duration-100
+				ease-in hover:invert"
 				onclick={() => {
 					clickedmenu = !clickedmenu;
 				}}
 			>
 				<DotsIcon height="1em" />
-			</div>
+			</button>
 			{#if clickedmenu}
 				<div
-					class="absolute top-0 left-6 isolate flex transform flex-col overflow-clip rounded-xl border-2 border-white bg-black"
+					class="absolute top-7 right-0 isolate flex transform flex-col overflow-clip rounded-xl border-2
+					border-white bg-black"
 					transition:slide
 				>
 					<MenuButton
 						text="add card"
 						color="oklch(0.626 0.257 29)"
-						on:click={() => goto(resolve('/addCard'))}
+						on:click={() => goto(resolve('/addCard/[deckid]', { deckid: folder.id }))}
 					/>
 					<MenuButton
 						text="modify card"
 						color="oklch(0.769 0.188 70.08)"
-						on:click={() => goto(resolve('/modifyDeck/[deckid]', { deckid: id }))}
+						on:click={() => goto(resolve('/modifyDeck/[deckid]', { deckid: folder.id }))}
 					/>
 					<MenuButton text="copy deck" color="oklch(0.649 0.311 321)" />
 					<MenuButton text="rename" color="oklch(0.511 0.272 263)" />
 					<MenuButton
-						text={privateDeck ? 'make public' : 'make private'}
+						text={folder.private ? 'make public' : 'make private'}
 						color="oklch(0.781 0.258 143)"
 					/>
 				</div>
 			{/if}
 		</div>
 	</div>
-	{#if (collapsed[id] ?? true) && subfolders}
-		<div transition:slide={{ easing: cubicOut }} class="pl-8">
-			{#each subfolders as folder (folder.id)}
-				<Folder
-					id={folder.id}
-					name={folder.name}
-					subfolders={folder.subfolders || null}
-					privateDeck={folder.private}
-				/>
+
+	{#if hasChildren && !isCollapsed}
+		<div transition:slide={{ easing: cubicOut }} class="w-full pl-8">
+			{#each children as child (child.id)}
+				<Folder folder={child} {folders} />
 			{/each}
 		</div>
 	{/if}
-</button>
+</div>

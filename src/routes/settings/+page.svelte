@@ -5,7 +5,7 @@
 <main
 	class="h-[calc(100dvh-5rem)] overflow-y-auto scroll-smooth font-global text-white motion-reduce:scroll-auto"
 >
-	<aside class="absolute left-20">
+	<aside class="absolute lg:left-20 not-lg:left-0">
 		<p>
 			<a href="#account-acc" class="transform transition-all duration-100 hover:bg-blue">Account</a>
 		</p>

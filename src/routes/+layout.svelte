@@ -95,6 +95,13 @@
 										search = '';
 										searchfocused = false;
 									}
+									if (event.key === 'Enter') {
+										const query = search.trim();
+										if (!query) return;
+										search = '';
+										searchfocused = false;
+										goto(resolve('/search/[search]', { search: query }));
+									}
 								}}
 							/>
 						{/if}
