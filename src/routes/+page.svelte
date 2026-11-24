@@ -7,8 +7,8 @@
 	let folders: folder[] = $derived(data.folders);
 </script>
 
-<main class="flex h-screen w-full">
-	<section class="mx-auto mt-20 flex h-fit w-1/2 flex-col text-white">
+<main class="flex h-screen w-full overflow-clip">
+	<section class="mx-auto flex h-fit w-1/2 flex-col text-white">
 		<div class="flex w-full flex-row justify-between italic">
 			<p>Folder</p>
 			<div class="flex w-50 flex-row justify-between">

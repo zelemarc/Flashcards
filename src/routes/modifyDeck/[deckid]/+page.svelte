@@ -14,7 +14,7 @@
 </script>
 
 <main class="flex h-screen w-full">
-	<section class="mx-auto mt-20 flex h-fit w-4/5 flex-col text-white">
+	<section class="mx-auto flex h-fit w-4/5 flex-col text-white">
 		<h1
 			class="flex flex-row gap-2 text-4xl font-bold"
 			title="this deck is {Folder.private ? 'private' : 'public'}"

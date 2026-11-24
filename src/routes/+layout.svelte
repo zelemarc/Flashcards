@@ -4,7 +4,6 @@
 	import type { LayoutProps } from './$types';
 	import { draw, slide } from 'svelte/transition';
 	import SearchIcon from '@iconify-svelte/tabler/search';
-	import ButtonHeaderGroup from '#lib/components/ButtonHeaderGroup.svelte';
 	import ButtonHeader from '#lib/components/ButtonHeader.svelte';
 	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
@@ -12,7 +11,13 @@
 	let { children }: LayoutProps = $props();
 	let searchfocused = $state(false);
 	let search = $state('');
+	let searchInput = $state<HTMLInputElement | null>(null);
 	let user = true;
+
+	// Focus the input once it has actually been mounted/rendered.
+	$effect(() => {
+		if (searchfocused) searchInput?.focus();
+	});
 </script>
 
 <svelte:head>
@@ -24,7 +29,9 @@
 		class="fixed z-50 m-1 flex h-fit w-full justify-between rounded-2xl border
 		border-white/20 bg-gray-400/15 px-4 py-2 backdrop-blur-xl"
 	>
-		<a href={resolve('')} title="Home"> <h1 class="font-handwritten text-3xl text-white italic">Flashcard</h1></a>
+		<a href={resolve('')} title="Home">
+			<h1 class="font-handwritten text-3xl text-white italic">Flashcard</h1></a
+		>
 
 		<a
 			href={resolve('')}
@@ -52,18 +59,46 @@
 		</a>
 
 		<div class="flex w-fit flex-row self-center font-global text-white">
-			<ButtonHeaderGroup>
+			<div class="flex flex-row gap-2">
 				{#if user != null}
 					<!-- search button -->
-					<button onfocusin={() => searchfocused = true}
-					onfocusout={() => search === "" ? searchfocused = false : null}
-					class="flex flex-row cursor-pointer rounded-2xl px-3 py-1 transition-all h-fit
-					duration-100 ease-in hover:bg-[#eeee] hover:text-black justify-center align-middle">
-						<SearchIcon height="1.4em" class="self-center"/>
+					<div
+						role="search"
+						class="flex h-fit cursor-pointer flex-row justify-center rounded-2xl px-3 py-1
+					align-middle transition-all duration-100 ease-in hover:bg-[#eeee] hover:text-black"
+						onfocusin={() => (searchfocused = true)}
+						onfocusout={(event) => {
+							// Only close when focus leaves the search area and nothing was typed.
+							if (event.currentTarget.contains(event.relatedTarget as Node | null)) return;
+							if (search === '') searchfocused = false;
+						}}
+					>
+						<button
+							type="button"
+							aria-label="Search"
+							title="Search"
+							class="flex cursor-pointer items-center"
+							onclick={() => (searchfocused = true)}
+						>
+							<SearchIcon height="1.4em" class="self-center" />
+						</button>
 						{#if searchfocused}
-						    <input type="text" placeholder="search..." bind:value={search} class="bg-transparent border-none outline-0 h-[1.4em]" transition:slide={{axis: 'x', easing: cubicInOut}}/>
+							<input
+								type="text"
+								placeholder="search..."
+								bind:this={searchInput}
+								bind:value={search}
+								class="h-[1.4em] border-none bg-transparent outline-0"
+								transition:slide={{ axis: 'x', easing: cubicInOut }}
+								onkeydown={(event) => {
+									if (event.key === 'Escape') {
+										search = '';
+										searchfocused = false;
+									}
+								}}
+							/>
 						{/if}
-					</button>
+					</div>
 					<ButtonHeader text="Statistics" action="/statistics" />
 					<ButtonHeader text="Settings" action="/settings" />
 				{:else}
@@ -75,8 +110,10 @@
 						Login
 					</button>
 				{/if}
-			</ButtonHeaderGroup>
+			</div>
 		</div>
 	</header>
-	{@render children()}
+	<section class="pt-20">
+		{@render children()}
+	</section>
 </section>

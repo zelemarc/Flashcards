@@ -1,16 +1,11 @@
 export interface card {
   id: string;
-  type: string;
   question: string;
   answer: string;
   answerHistory?: answerHistory[] | null;
+  showIn: string;
   deckid: string;
   created: string; //date YYYY-MM-DDTHH:MM:SS
-}
-
-export interface inputType {
-  text: string;
-  img?: ImageBitmap | null;
 }
 
 export interface answerHistory {

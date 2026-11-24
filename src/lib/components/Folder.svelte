@@ -3,6 +3,8 @@
 	import Folder from './Folder.svelte';
 	import FolderIcon from '@iconify-svelte/tabler/folder';
 	import FolderOpenIcon from '@iconify-svelte/tabler/folder-open';
+	import ChevronDown from '@iconify-svelte/tabler/chevron-down';
+	import ChevronRight from '@iconify-svelte/tabler/chevron-right';
 	import CardsIcon from '@iconify-svelte/tabler/cards';
 	import DotsIcon from '@iconify-svelte/tabler/dots';
 	import PlayIcon from '@iconify-svelte/tabler/play-card';
@@ -11,9 +13,11 @@
 	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
 	import MenuButton from './MenuButton.svelte';
+	import { onMount } from 'svelte';
 
 	let focused = $state(false);
 	let showSub = $state(false);
+	let collapsed: Record<string, boolean> = $state({});
 	let clickedmenu = $state(false);
 	let {
 		id,
@@ -21,27 +25,36 @@
 		subfolders = null,
 		privateDeck
 	}: { id: string; name: string; subfolders: folder[] | null; privateDeck: boolean } = $props();
+
+	$effect(() => {
+		cookieStore.set('collapsed', JSON.stringify(collapsed), { path: '/' });
+	});
+	onMount(async () => {
+		const saved = await cookieStore.get('collapsed');
+		if (saved?.value) {
+			collapsed = JSON.parse(saved.value);
+		}
+	})
 </script>
 
 <button
-	class="flex transform flex-col rounded-2xl bg-transparent text-xl transition-all duration-100 ease-in hover:bg-white/10"
+	class="flex w-full transform flex-col rounded-2xl bg-transparent text-xl transition-all duration-100 ease-in hover:bg-white/10"
 	onfocus={() => {
 		focused = true;
-		showSub = true;
 	}}
 	onfocusout={() => {
 		focused = false;
-		showSub = false;
 	}}
-	ondblclick={() => goto(resolve('/card/0'))}
+
+	ondblclick={() => goto(resolve('/card/[deckid]', { deckid: id}))}
 >
-	<div class="relative flex w-full flex-row">
-		<div class="relative rounded-xl px-2">
+	<div class="relative flex w-full flex-row" 	onclick={() => (collapsed[id] = !collapsed[id])}>
+		<div class="relative rounded-xl px-2" >
 			{#if focused}
 				<div
 					class="absolute -left-18 isolate z-50 transform animate-scaling overflow-clip rounded-2xl
 				bg-black px-2 invert transition duration-100 ease-in hover:scale-105"
-					onclick={() => goto(resolve('/card/[deckid]', {deckid: id}))}
+					onclick={() => goto(resolve('/card/[deckid]', { deckid: id }))}
 				>
 					<p class="group gap-0 rounded-2xl font-black tracking-[-0.1em] italic invert">
 						<span class="text-black group-hover:text-red">P</span>
@@ -52,10 +65,14 @@
 				</div>
 			{/if}
 			{#if subfolders != null}
-				{#if !showSub}
-					<FolderIcon height="1.5em" />
+				{#if !collapsed[id]}
+				<div in:slide={{axis: 'y'}} out:slide={{axis: 'y'}}>
+					<ChevronRight height="1.5em"/>
+				</div>
 				{:else}
-					<FolderOpenIcon height="1.5em" />
+				<div in:slide={{axis: 'y'}} out:slide={{axis: 'y'}}>
+					<ChevronDown height="1.5em" />
+				</div>
 				{/if}
 			{:else}
 				<CardsIcon height="1.5em" />
@@ -84,7 +101,7 @@
 					<MenuButton
 						text="modify card"
 						color="oklch(0.769 0.188 70.08)"
-						on:click={() => goto(resolve('/modifyDeck/[deckid]', {deckid: id}))}
+						on:click={() => goto(resolve('/modifyDeck/[deckid]', { deckid: id }))}
 					/>
 					<MenuButton text="copy deck" color="oklch(0.649 0.311 321)" />
 					<MenuButton text="rename" color="oklch(0.511 0.272 263)" />
@@ -96,8 +113,8 @@
 			{/if}
 		</div>
 	</div>
-	{#if showSub && subfolders}
-		<div transition:slide={{ easing: cubicOut }}>
+	{#if (collapsed[id] ?? true) && subfolders}
+		<div transition:slide={{ easing: cubicOut }} class="pl-8">
 			{#each subfolders as folder (folder.id)}
 				<Folder
 					id={folder.id}

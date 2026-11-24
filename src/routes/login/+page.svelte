@@ -46,7 +46,7 @@
 				>
 				<input
 					type="email"
-					placeholder="jakubwarkusz@exmaple.com"
+					placeholder="user@exmaple.com"
 					class="w-full rounded-lg border-none bg-transparent text-white outline-none"
 					bind:value={email}
 				/>
@@ -67,7 +67,7 @@
 			<ButtonSlide
 				text="Login"
 				onclick={() => {
-					alert('warkusz');
+					alert('log in page will be done soon!');
 				}}
 				disabled={!login}
 			/>
@@ -89,7 +89,7 @@
 				>
 				<input
 					type="email"
-					placeholder="jakubwarkusz@exmaple.com"
+					placeholder="user@exmaple.com"
 					class="w-full rounded-lg border-none bg-transparent text-white outline-none"
 					bind:value={email}
 				/>
@@ -135,7 +135,7 @@
 			<ButtonSlide
 				text="Make it!"
 				onclick={() => {
-					alert('warkusz');
+					alert('log in page will be done soon!');
 				}}
 				disabled={login}
 			/>
