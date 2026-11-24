@@ -1,37 +1,26 @@
 <script lang="ts">
 	import Folder from '#lib/components/Folder.svelte';
 	import type { folder } from '#lib/components/folder.ts';
+	import type { PageProps } from './$types';
 
-	let folders: folder[] = [
-		{ id: '0', name: 'polski', subfolders: null, new: 0, learn: 0, due: 0 },
-		{ id: '1', name: 'matemtyka', subfolders: null, new: 0, learn: 0, due: 0 },
-		{
-			id: '2',
-			name: 'informatyka',
-			subfolders: [
-				{ id: '20', name: 'cpp', new: 0, learn: 0, due: 0 },
-				{ id: '21', name: 'python', new: 0, learn: 0, due: 0 }
-			],
-			new: 0,
-			learn: 0,
-			due: 0
-		}
-	];
+	let { data }: PageProps = $props();
+	let folders: folder[] = $derived(data.folders);
+	let rootFolders: folder[] = $derived(folders.filter((folder) => !folder.parentid));
 </script>
 
-<main class="flex h-screen w-full">
-	<section class="mx-auto mt-20 flex h-fit w-1/2 flex-col text-white">
+<main class="flex h-screen w-full overflow-clip">
+	<section class="mx-auto flex h-fit w-1/2 flex-col text-white">
 		<div class="flex w-full flex-row justify-between italic">
 			<p>Folder</p>
-			<div class="flex w-50 flex-row justify-between">
+			<div class="mr-6 flex w-50 flex-row justify-between text-sm">
 				<p>new</p>
 				<p>learn</p>
 				<p>due</p>
 			</div>
 		</div>
 		<hr />
-		{#each folders as folder (folder.id)}
-			<Folder id={folder.id} name={folder.name} subfolders={folder?.subfolders || null} />
+		{#each rootFolders as folder (folder.id)}
+			<Folder {folder} {folders} />
 		{/each}
 	</section>
 </main>
