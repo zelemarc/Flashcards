@@ -1,8 +1,11 @@
 <script lang="ts">
 	import ButtonSlide from '#lib/components/ButtonSlide.svelte';
+	import { enhance } from '$app/forms';
 	import { cubicInOut } from 'svelte/easing';
 	import { slide } from 'svelte/transition';
+	import type { PageProps } from './$types';
 
+	let { form }: PageProps = $props();
 	let login = $state(false);
 
 	let email = $state('');
@@ -38,7 +41,7 @@
 	>
 		<p class="mx-auto font-handwritten text-4xl font-bold text-white italic">Login</p>
 		<div class="h-4"></div>
-		<form class="text-global flex flex-col gap-2">
+		<form method="POST" action="?/login" use:enhance class="text-global flex flex-col gap-2">
 			<fieldset class="rounded-xl border-2 border-white bg-transparent">
 				<legend
 					class="mx-2 rounded-2xl border-2 border-white bg-transparent px-3 text-sm font-bold text-white italic"
@@ -46,9 +49,12 @@
 				>
 				<input
 					type="email"
+					name="email"
 					placeholder="user@exmaple.com"
 					class="w-full rounded-lg border-none bg-transparent text-white outline-none"
 					bind:value={email}
+					autocomplete="email"
+					required
 				/>
 			</fieldset>
 
@@ -59,18 +65,18 @@
 				>
 				<input
 					type="password"
+					name="password"
 					placeholder="************"
 					class="w-full rounded-lg border-none bg-transparent text-white outline-none"
 					bind:value={password}
+					autocomplete="current-password"
+					required
 				/>
 			</fieldset>
-			<ButtonSlide
-				text="Login"
-				onclick={() => {
-					alert('log in page will be done soon!');
-				}}
-				disabled={!login}
-			/>
+			<ButtonSlide text="Login" type="submit" disabled={!login} />
+			{#if form?.loginError}
+				<p class="font-global text-sm text-red-200" role="alert">{form.loginError}</p>
+			{/if}
 		</form>
 	</div>
 	<!-- register right side -->
@@ -81,7 +87,7 @@
 			Create your account!
 		</p>
 		<div class="h-4"></div>
-		<form class="text-global flex flex-col gap-2">
+		<form method="POST" action="?/register" use:enhance class="text-global flex flex-col gap-2">
 			<fieldset class="rounded-xl border-2 border-white bg-transparent">
 				<legend
 					class="mx-2 rounded-2xl border-2 border-white bg-transparent px-3 text-sm font-bold text-white italic"
@@ -89,9 +95,12 @@
 				>
 				<input
 					type="email"
+					name="email"
 					placeholder="user@exmaple.com"
 					class="w-full rounded-lg border-none bg-transparent text-white outline-none"
 					bind:value={email}
+					autocomplete="email"
+					required
 				/>
 			</fieldset>
 
@@ -102,9 +111,12 @@
 				>
 				<input
 					type="password"
+					name="password"
 					placeholder="************"
 					class="w-full rounded-lg border-none bg-transparent text-white outline-none"
 					bind:value={password}
+					autocomplete="new-password"
+					required
 				/>
 			</fieldset>
 
@@ -116,15 +128,18 @@
 				>
 				<input
 					type="password"
+					name="repeatPassword"
 					placeholder="************"
 					class="w-full rounded-lg border-none bg-transparent text-white outline-none"
 					bind:value={reapetpassword}
+					autocomplete="new-password"
+					required
 				/>
 			</fieldset>
 			<p class="font-global text-white">
 				Remember that the passwords <span class="">MUST</span> be the same, and they have to:
 			</p>
-			<dl class="font-global text-white" type="dot">
+			<dl class="font-global text-white">
 				<dt>have a BIG letter (A-Z)</dt>
 				<dt>have a small letter (a-z)</dt>
 				<dt>have a number (0-9)</dt>
@@ -132,13 +147,10 @@
 				<dt>be between 8-32 characters long</dt>
 			</dl>
 
-			<ButtonSlide
-				text="Make it!"
-				onclick={() => {
-					alert('log in page will be done soon!');
-				}}
-				disabled={login}
-			/>
+			<ButtonSlide text="Make it!" type="submit" disabled={login} />
+			{#if form?.registerError}
+				<p class="font-global text-sm text-red-200" role="alert">{form.registerError}</p>
+			{/if}
 		</form>
 	</div>
 
@@ -150,6 +162,7 @@
 			<p>Don't have an account yet?</p>
 			<ButtonSlide
 				text="CREATE IT!"
+				type="button"
 				onclick={() => {
 					login = false;
 				}}
@@ -163,6 +176,7 @@
 			<p>Have an account?</p>
 			<ButtonSlide
 				text="Login then!"
+				type="button"
 				onclick={() => {
 					login = true;
 				}}

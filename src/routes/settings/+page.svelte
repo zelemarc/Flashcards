@@ -5,7 +5,7 @@
 <main
 	class="h-[calc(100dvh-5rem)] overflow-y-auto scroll-smooth font-global text-white motion-reduce:scroll-auto"
 >
-	<aside class="absolute lg:left-20 not-lg:left-0">
+	<aside class="absolute not-lg:left-0 lg:left-20">
 		<p>
 			<a href="#account-acc" class="transform transition-all duration-100 hover:bg-blue">Account</a>
 		</p>
@@ -88,7 +88,7 @@
 			</h2>
 			<div>
 				<p>Delete account</p>
-				<ButtonSlide text="ok..." on:click={() => {}} />
+				<ButtonSlide text="ok..." onclick={() => {}} />
 			</div>
 			<div></div>
 		</section>

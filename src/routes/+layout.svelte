@@ -8,11 +8,11 @@
 	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
 	import { cubicIn, cubicInOut } from 'svelte/easing';
-	let { children }: LayoutProps = $props();
+	let { children, data }: LayoutProps = $props();
 	let searchfocused = $state(false);
 	let search = $state('');
 	let searchInput = $state<HTMLInputElement | null>(null);
-	let user = true;
+	let user = $derived(data.user);
 
 	// Focus the input once it has actually been mounted/rendered.
 	$effect(() => {

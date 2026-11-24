@@ -1,19 +1,30 @@
 <script lang="ts">
 	import { slide } from 'svelte/transition';
 
-	let { text = 'button', disabled = false } = $props();
+	let {
+		text = 'button',
+		disabled = false,
+		type = 'button',
+		onclick
+	}: {
+		text?: string;
+		disabled?: boolean;
+		type?: 'button' | 'submit' | 'reset';
+		onclick?: (event: MouseEvent) => void;
+	} = $props();
 	let mouseover = $state(false);
 </script>
 
 <button
+	{type}
 	class="relative isolate transform rounded-xl border-4 border-white px-3 py-1
     font-bold italic transition-all duration-100 ease-in hover:scale-105 focus:animate-scaling"
-	on:click
+	{onclick}
 	{disabled}
-	on:mouseenter={() => {
+	onmouseenter={() => {
 		mouseover = true;
 	}}
-	on:mouseleave={() => {
+	onmouseleave={() => {
 		mouseover = false;
 	}}
 >

@@ -105,7 +105,7 @@
 				<p class="text-sm text-white/40">Add your first card to start studying.</p>
 				<ButtonSlide
 					text="add card"
-					on:click={() => goto(resolve('/addCard/[deckid]', { deckid: data.folder.id }))}
+					onclick={() => goto(resolve('/addCard/[deckid]', { deckid: data.folder.id }))}
 				/>
 			</section>
 		{:else if isDone}
@@ -115,10 +115,10 @@
 					You reviewed {cards.length} card{cards.length === 1 ? '' : 's'}.
 				</p>
 				<div class="mt-2 flex flex-row gap-3">
-					<ButtonSlide text="study again" on:click={restart} />
+					<ButtonSlide text="study again" onclick={restart} />
 					<ButtonSlide
 						text="back to deck"
-						on:click={() => goto(resolve('/modifyDeck/[deckid]', { deckid: data.folder.id }))}
+						onclick={() => goto(resolve('/modifyDeck/[deckid]', { deckid: data.folder.id }))}
 					/>
 				</div>
 			</section>
@@ -170,12 +170,12 @@
 
 			<footer class="flex flex-row flex-wrap justify-center gap-3 pb-2">
 				{#if showAnswer}
-					<ButtonSlide text="1 · bad" on:click={() => grade(-1)} />
-					<ButtonSlide text="2 · again" on:click={() => grade(0)} />
-					<ButtonSlide text="3 · good" on:click={() => grade(1)} />
-					<ButtonSlide text="4 · easy" on:click={() => grade(2)} />
+					<ButtonSlide text="1 · bad" onclick={() => grade(-1)} />
+					<ButtonSlide text="2 · again" onclick={() => grade(0)} />
+					<ButtonSlide text="3 · good" onclick={() => grade(1)} />
+					<ButtonSlide text="4 · easy" onclick={() => grade(2)} />
 				{:else}
-					<ButtonSlide text="show answer" on:click={() => (showAnswer = true)} />
+					<ButtonSlide text="show answer" onclick={() => (showAnswer = true)} />
 				{/if}
 			</footer>
 		{/if}

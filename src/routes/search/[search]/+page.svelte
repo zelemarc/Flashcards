@@ -96,7 +96,7 @@
 				<p class="max-w-md text-sm text-white/40">
 					No decks or cards match "{data.query}". Try a different word or browse your decks.
 				</p>
-				<ButtonSlide text="browse decks" on:click={() => goto(resolve('/'))} />
+				<ButtonSlide text="browse decks" onclick={() => goto(resolve('/'))} />
 			</section>
 		{/if}
 	</section>
