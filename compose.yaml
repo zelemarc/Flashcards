@@ -1,0 +1,38 @@
+services:
+  backend:
+    build:
+      context: ./backend
+    environment:
+      DATABASE_URL: sqlite:////data/flashcards.db
+      SECRET_KEY_FILE: /data/.secret_key
+    volumes:
+      - flashcards-data:/data
+    ports:
+      - "127.0.0.1:8000:8000"
+    healthcheck:
+      test:
+        - CMD
+        - python
+        - -c
+        - "from urllib.request import urlopen; urlopen('http://127.0.0.1:8000/docs', timeout=2)"
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  frontend:
+    build:
+      context: .
+      args:
+        CSRF_TRUSTED_ORIGINS: ${CSRF_TRUSTED_ORIGINS:-http://localhost:3000,http://127.0.0.1:3000}
+    environment:
+      BACKEND_URL: http://backend:8000
+      HOST: 0.0.0.0
+      PORT: 3000
+    depends_on:
+      backend:
+        condition: service_healthy
+    ports:
+      - "127.0.0.1:3000:3000"
+
+volumes:
+  flashcards-data:

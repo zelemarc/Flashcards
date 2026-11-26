@@ -73,7 +73,11 @@ async function authenticate(
 
 	cookies.set(TOKEN_COOKIE, result.access_token, {
 		httpOnly: true,
-		secure: process.env.NODE_ENV === 'production',
+		// Docker's local HTTP setup runs with NODE_ENV=production. Only mark the
+		// cookie Secure when the browser-facing request actually uses HTTPS.
+		secure:
+			request.headers.get('x-forwarded-proto')?.split(',')[0].trim() === 'https' ||
+			new URL(request.url).protocol === 'https:',
 		sameSite: 'lax',
 		path: '/',
 		maxAge: TOKEN_MAX_AGE_SECONDS

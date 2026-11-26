@@ -1,0 +1,13 @@
+.git
+.env
+.env.*
+!.env.example
+node_modules
+.svelte-kit
+build
+.output
+backend/venv
+backend/__pycache__
+backend/*.db
+backend/.secret_key
+npm-debug.log*

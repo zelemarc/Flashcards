@@ -1,0 +1,6 @@
+venv
+__pycache__
+*.py[cod]
+*.db
+.secret_key
+.env
