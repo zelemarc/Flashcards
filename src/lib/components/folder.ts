@@ -8,4 +8,5 @@ export interface folder {
 	nextCard?: string;
 	private: boolean;
 	created?: string;
+	ownerEmail?: string;
 }

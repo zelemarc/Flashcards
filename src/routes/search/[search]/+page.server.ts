@@ -1,12 +1,31 @@
 import type { PageServerLoad } from './$types';
-import { listCards, listFolders, requireAuth } from '#lib/server/api.ts';
+import { listCards, listFolders, listPublicFolders, requireAuth } from '#lib/server/api.ts';
 
 export const load: PageServerLoad = async ({ params, fetch, locals }) => {
 	const token = requireAuth(locals);
 	const context = { fetch, token };
 	const query = params.search.trim();
 	const term = query.toLowerCase();
-	const folders = await listFolders(context);
+
+	// Own public decks + other users' public decks (private decks are excluded)
+	const [ownFolders, publicFolders] = await Promise.all([
+		listFolders(context, { excludePrivate: true }),
+		listPublicFolders(context)
+	]);
+	// The authenticated user's email is authoritative for decks they own.
+	const ownFoldersWithOwner = ownFolders.map((folder) => ({
+		...folder,
+		ownerEmail: locals.user?.email ?? folder.ownerEmail
+	}));
+
+	// Deduplicate by id (in case a deck appears in both lists)
+	const seen = new Set<string>();
+	const folders = [...ownFoldersWithOwner, ...publicFolders].filter((folder) => {
+		if (seen.has(folder.id)) return false;
+		seen.add(folder.id);
+		return true;
+	});
+
 	const cardsByFolder = await Promise.all(
 		folders.map(async (folder) => ({ folder, cards: await listCards(context, folder.id) }))
 	);

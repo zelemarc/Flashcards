@@ -1,6 +1,8 @@
 <script lang="ts">
 	import ButtonSlide from '#lib/components/ButtonSlide.svelte';
 	import { enhance } from '$app/forms';
+	import { goto } from '$app/navigation';
+	import { resolve } from '$app/paths';
 	import type { PageProps } from './$types';
 
 	let { data, form }: PageProps = $props();
@@ -29,7 +31,17 @@
 				<p class="text-sm text-red-300" role="alert">{form.error}</p>
 			{/if}
 			<footer class="mx-auto">
-				<ButtonSlide text="add card" type="submit" />
+				<ButtonSlide
+					text="add card"
+					type="submit"
+					onclick={() => goto(resolve('/addCard/[deckid]', { deckid: folderId }))}
+				/>
+
+				<ButtonSlide
+					text="add card & go to check"
+					type="submit"
+					onclick={() => goto(resolve('/modifyDeck/[deckid]', { deckid: folderId }))}
+				/>
 			</footer>
 		</form>
 	</section>

@@ -7,7 +7,7 @@ from sqlalchemy.orm import Session
 
 from auth import get_current_user
 from database import Answer, Card, Folder, User, get_db
-from folders import get_own_folder, subtree
+from folders import get_own_folder, get_readable_folder, subtree
 from scheduler import apply_answer
 
 router = APIRouter(tags=["cards"])
@@ -98,7 +98,7 @@ def list_cards(
     user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
-    folder = get_own_folder(db, folder_id, user)
+    folder = get_readable_folder(db, folder_id, user)
     return [card_to_dict(c) for c in folder.cards]
 
 

@@ -32,6 +32,14 @@ def get_own_folder(db: Session, folder_id: int, user: User) -> Folder:
     return folder
 
 
+def get_readable_folder(db: Session, folder_id: int, user: User) -> Folder:
+    """Folder that the user can read: own folder or any public folder."""
+    folder = db.get(Folder, folder_id)
+    if folder is None or (folder.user_id != user.id and not folder.public):
+        raise HTTPException(404, "nie znaleziono folderu")
+    return folder
+
+
 def subtree(folder: Folder) -> list:
     """folder razem ze wszystkimi podfolderami"""
     result = [folder]
@@ -47,6 +55,7 @@ def folder_to_dict(f: Folder) -> dict:
         "id": str(f.id),
         "name": f.name,
         "public": f.public,
+        "owner_email": f.user.email if f.user else None,
         "subfolders": [folder_to_dict(s) for s in f.subfolders] or None,
         "new": sum(1 for c in f.cards if c.state == "new"),
         "learn": sum(1 for c in f.cards if c.state == "learn"),
@@ -88,21 +97,14 @@ def list_folders(user: User = Depends(get_current_user), db: Session = Depends(g
 
 @router.get("/folders/public")
 def list_public_folders(user: User = Depends(get_current_user), db: Session = Depends(get_db)):
-    """wyswietla publiczne foldery"""
+    """wyswietla publiczne foldery innych uzytkownikow"""
     folders = (
         db.query(Folder)
         .filter(Folder.public.is_(True), Folder.user_id != user.id)
         .all()
     )
     top = [f for f in folders if f.parent is None or not f.parent.public]
-    return [
-        {
-            "id": str(f.id),
-            "name": f.name,
-            "cards_count": sum(len(s.cards) for s in subtree(f)),
-        }
-        for f in top
-    ]
+    return [folder_to_dict(f) for f in top]
 
 
 @router.post("/folders", status_code=201)

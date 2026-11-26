@@ -13,6 +13,7 @@ export type ApiFolder = {
 	id: string | number;
 	name: string;
 	public: boolean;
+	owner_email?: string | null;
 	new: number;
 	learn: number;
 	due: number;
@@ -93,7 +94,8 @@ export function flattenFolders(roots: ApiFolder[]): folder[] {
 			new: item.new ?? 0,
 			learn: item.learn ?? 0,
 			due: item.due ?? 0,
-			private: !item.public
+			private: !item.public,
+			ownerEmail: item.owner_email ?? undefined
 		});
 		for (const child of item.subfolders ?? []) visit(child, id);
 	};
@@ -101,8 +103,20 @@ export function flattenFolders(roots: ApiFolder[]): folder[] {
 	return flattened;
 }
 
-export async function listFolders(context: ApiContext): Promise<folder[]> {
+export async function listFolders(
+	context: ApiContext,
+	options: { excludePrivate?: boolean } = {}
+): Promise<folder[]> {
+	// Backend /folders returns only the current user's folders (public + private).
+	// Other users' private decks are never returned by the API.
 	const roots = await apiRequest<ApiFolder[]>(context, '/folders');
+	const all = flattenFolders(roots);
+	return options.excludePrivate ? all.filter((folder) => !folder.private) : all;
+}
+
+export async function listPublicFolders(context: ApiContext): Promise<folder[]> {
+	// Backend /folders/public returns other users' public folders (folder_to_dict shape).
+	const roots = await apiRequest<ApiFolder[]>(context, '/folders/public');
 	return flattenFolders(roots);
 }
 
@@ -135,7 +149,8 @@ export async function listCards(context: ApiContext, folderId: string): Promise<
 export async function listCardsForTree(
 	context: ApiContext,
 	folders: folder[],
-	rootId: string
+	rootId: string,
+	options: { includeAll?: boolean } = {}
 ): Promise<card[]> {
 	const descendantIds = new Set<string>([rootId]);
 	let foundChild = true;
@@ -149,11 +164,40 @@ export async function listCardsForTree(
 		}
 	}
 
-	const result = await Promise.all([...descendantIds].map((id) => listCards(context, id)));
+	const result = await Promise.all(
+		[...descendantIds].map((id) => listCards(context, id))
+	);
+	if (options.includeAll) return result.flat();
+
 	const now = Date.now();
 	return result.flat().filter((item) => {
 		if (item.state === 'new') return true;
 		if (item.state !== 'learn' && item.state !== 'review') return false;
 		return item.dueDate != null && Date.parse(item.dueDate) <= now;
 	});
+}
+
+export async function copyFolder(context: ApiContext, folderId: string): Promise<folder> {
+	const copied = await apiRequest<folder>(
+		context,
+		 `/folders/${encodeURIComponent(folderId)}/copy`,
+		{ method: 'POST' }
+	);
+	return copied;
+}
+
+export async function changePassword(
+	context: ApiContext,
+	oldPassword: string,
+	newPassword: string
+): Promise<{ success: boolean; detail?: string }> {
+	const response = await apiRequest<{ success: boolean; detail?: string }>(
+		context,
+		'/auth/change-password',
+		{
+			method: 'POST',
+			body: JSON.stringify({ old_password: oldPassword, new_password: newPassword })
+		}
+	);
+	return response;
 }

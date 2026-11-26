@@ -13,7 +13,7 @@
 	let reapetpassword = $state('');
 </script>
 
-<main class="relative grid min-h-[calc(100svh)] w-full grid-cols-2 overflow-clip">
+<main class="fixed top-0 grid min-h-[calc(100svh)] w-full grid-cols-2 overflow-clip">
 	<div
 		class="absolute top-[-12%] bottom-[-12%] -left-20 z-0 transform transition-all duration-200 {login
 			? 'w-[65%]'
@@ -21,7 +21,7 @@
 	></div>
 	<div
 		class="absolute top-[-12%] bottom-[-12%] {login
-			? '-right-40'
+			? '-right-30'
 			: '-right-20'} z-0 w-[55%] -rotate-10 transform bg-green-700/90 transition-all duration-200"
 	></div>
 	{#if !login}
@@ -32,7 +32,7 @@
 	{:else}
 		<div
 			transition:slide={{ axis: 'x', easing: cubicInOut }}
-			class="absolute top-[-12%] -right-40 bottom-[-12%] z-40 w-[55%] -rotate-10 transform bg-gray-300/15 backdrop-blur-lg"
+			class="absolute top-[-12%] -right-30 bottom-[-12%] z-40 w-[55%] -rotate-10 transform bg-gray-300/15 backdrop-blur-lg"
 		></div>
 	{/if}
 	<!-- login left side -->

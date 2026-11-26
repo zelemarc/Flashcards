@@ -12,7 +12,7 @@ from sqlalchemy.orm import Session
 
 from database import User, get_db
 
-KEY_FILE = Path(__file__).parent / ".secret_key"
+KEY_FILE = Path(os.getenv("SECRET_KEY_FILE", Path(__file__).parent / ".secret_key"))
 
 
 def load_secret_key() -> str:

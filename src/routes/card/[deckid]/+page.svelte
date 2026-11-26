@@ -13,11 +13,14 @@
 	let cards = $derived(data.cards);
 	let index = $state(0);
 	let showAnswer = $state(false);
+	let reversed = $derived(data.reversed);
 	let grading = $state(false);
 	let gradeError = $state('');
 	let cardStartedAt = Date.now();
 
 	let cardObject = $derived(cards[index]);
+	let frontText = $derived(reversed ? cardObject?.answer : cardObject?.question);
+	let backText = $derived(reversed ? cardObject?.question : cardObject?.answer);
 	let isDone = $derived(cards.length > 0 && index >= cards.length);
 	let progress = $derived(cards.length === 0 ? 0 : (index / cards.length) * 100);
 
@@ -145,6 +148,10 @@
 						text="back to deck"
 						onclick={() => goto(resolve('/modifyDeck/[deckid]', { deckid: data.folder.id }))}
 					/>
+					<ButtonSlide
+						text="back to home"
+						onclick={() => goto(resolve('/'))}
+					/>
 				</div>
 			</section>
 		{:else}
@@ -164,13 +171,13 @@
 						class="flex flex-row items-center justify-between border-b border-white/10 px-6 py-4
 						text-xs tracking-[0.25em] text-white/40 uppercase"
 					>
-						<span>question</span>
+						<span>{reversed ? 'answer' : 'question'}</span>
 						<span class="tracking-normal normal-case italic">{cardObject?.id}</span>
 					</div>
 
 					<div class="flex flex-1 items-center justify-center overflow-y-auto px-8 py-8">
 						<p class="text-center font-serif-gothic text-4xl leading-tight font-bold">
-							{cardObject?.question}
+							{frontText}
 						</p>
 					</div>
 
@@ -179,8 +186,10 @@
 							transition:slide={{ duration: 200, easing: cubicOut }}
 							class="border-t border-white/10 bg-black/20 px-6 py-5"
 						>
-							<p class="text-xs tracking-[0.25em] text-amber uppercase">answer</p>
-							<p class="mt-1 font-serif-gothic text-2xl text-white/90">{cardObject?.answer}</p>
+							<p class="text-xs tracking-[0.25em] text-amber uppercase">
+								{reversed ? 'question' : 'answer'}
+							</p>
+							<p class="mt-1 font-serif-gothic text-2xl text-white/90">{backText}</p>
 						</div>
 					{:else}
 						<div

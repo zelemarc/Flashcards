@@ -87,7 +87,7 @@
 	}}
 >
 	<div class="relative flex w-full flex-row">
-		{#if focused}
+		{#if focused && (folder.new != 0 || folder.learn != 0 || folder.due != 0)}
 			<button
 				type="button"
 				aria-label="Study {folder.name}"
@@ -150,7 +150,7 @@
 			</button>
 			{#if clickedmenu}
 				<div
-					class="absolute top-7 right-0 isolate flex transform flex-col overflow-clip rounded-xl border-2
+					class="absolute top-0 left-7 isolate flex transform flex-col overflow-clip rounded-xl border-2
 					border-white bg-black"
 					transition:slide
 				>
@@ -164,7 +164,20 @@
 						color="oklch(0.769 0.188 70.08)"
 						onclick={() => goto(resolve('/modifyDeck/[deckid]', { deckid: folder.id }))}
 					/>
-					<MenuButton text="copy deck" color="oklch(0.649 0.311 321)" onclick={copyFolder} />
+					<MenuButton
+						text="reshuffle & play all"
+						color="oklch(0.649 0.311 321)"
+						onclick={() =>
+							goto(`${resolve('/card/[deckid]', { deckid: folder.id })}?all=1&shuffle=1`)}
+					/>
+					<MenuButton
+						text="reverse & play all"
+						color="oklch(0.769 0.188 70.08)"
+						onclick={() =>
+							goto(
+								`${resolve('/card/[deckid]', { deckid: folder.id })}?all=1&shuffle=1&reverse=1`
+							)}
+					/>
 					<MenuButton
 						text="rename"
 						color="oklch(0.511 0.272 263)"

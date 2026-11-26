@@ -1,4 +1,5 @@
 from datetime import datetime
+import os
 from typing import Optional
 
 from sqlalchemy import (
@@ -19,7 +20,7 @@ from sqlalchemy.orm import (
     sessionmaker,
 )
 
-DATABASE_URL = "sqlite:///./flashcards.db"
+DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./flashcards.db")
 
 engine = create_engine(
     DATABASE_URL,
