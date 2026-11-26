@@ -88,7 +88,7 @@ The seed data includes this development-only demo account:
 - Email: `agnieszka@example.com`
 - Password: `haslo123`
 
-Use the registration form to create another account. It requires a matching password between 8 and 32 characters containing uppercase and lowercase letters, a number, and a special character. Do not use the demo account or its password for a public deployment.
+Use the registration form to create another account. It requires a matching password between 8 and 32 characters containing uppercase and lowercase letters, a number, and a special character. Do not use the demo account or its password for a public deployment
 
 Login and registration are handled by SvelteKit server actions. The FastAPI JWT is stored in an HttpOnly, SameSite=Lax cookie named `access_token`, with a 24-hour lifetime. On incoming requests SvelteKit validates the token with FastAPI. Cookies are marked Secure when the browser-facing request uses HTTPS.
 
